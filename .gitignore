@@ -1,0 +1,9 @@
+.idea
+*/.terraform/
+.terraform.lock.hcl
+*.crt
+*.tfstate
+*.tfstate.backup
+vault-init.json
+**-token.yaml
+**-secret.yaml
