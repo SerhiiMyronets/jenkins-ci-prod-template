@@ -1,0 +1,51 @@
+mode: standalone
+existingSecret: minio-root-secret
+
+buckets:
+  - name: buildkit-cache
+    policy: none
+    purge: false
+    versioning: false
+
+users:
+  - accessKey: buildkit
+    existingSecret: minio-buildkit-secret
+    existingSecretKey: secretkey
+    policy: buildkit-cache-policy
+
+policies:
+  - name: buildkit-cache-policy
+    statements:
+      - effect: Allow
+        resources:
+          - "arn:aws:s3:::buildkit-cache/*"
+        actions:
+          - "s3:AbortMultipartUpload"
+          - "s3:GetObject"
+          - "s3:DeleteObject"
+          - "s3:PutObject"
+          - "s3:ListMultipartUploadParts"
+      - resources:
+          - "arn:aws:s3:::buildkit-cache"
+        actions:
+          - "s3:GetBucketLocation"
+          - "s3:ListBucket"
+          - "s3:ListBucketMultipartUploads"
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: longhorn
+
+consoleService:
+  type: ClusterIP
+  port: 9001
+
+service:
+  type: ClusterIP
+  port: 9000
+
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 250m

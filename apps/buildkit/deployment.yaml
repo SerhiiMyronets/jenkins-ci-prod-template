@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: buildkit
+  namespace: buildkit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: buildkit-service
+      app.kubernetes.io/instance: buildkit
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: buildkit-service
+        app.kubernetes.io/instance: buildkit
+    spec:
+      containers:
+        - name: buildkit-service
+          image: "moby/buildkit:v0.21.0"
+          imagePullPolicy: IfNotPresent
+          args:
+            - --addr
+            - unix:///run//buildkit/buildkitd.sock
+            - --addr
+            - tcp://0.0.0.0:1234
+            - --config
+            - /etc/buildkit/buildkitd.toml
+          envFrom:
+            - secretRef:
+                name: buildkit-s3-secret
+          ports:
+            - name: tcp
+              containerPort: 1234
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - buildctl
+                - debug
+                - workers
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - buildctl
+                - debug
+                - workers
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          securityContext:
+            privileged: true
+      terminationGracePeriodSeconds: 30
