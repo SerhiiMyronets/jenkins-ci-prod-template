@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sonar-token
+  namespace: jenkins
+type: Opaque
+data:
+  SONAR_TOKEN: BASE64_ENCODED_PLACEHOLDER

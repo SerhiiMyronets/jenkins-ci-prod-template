@@ -1,0 +1,40 @@
+controller:
+  admin:
+    existingSecret: jenkins-admin-secret
+    userKey: JENKINS_USER
+    passwordKey: JENKINS_PASS
+  containerEnvFrom:
+    - secretRef:
+        name: sonar-token
+    - secretRef:
+        name: github-access-token
+
+  installPlugins:
+    - kubernetes
+    - configuration-as-code
+    - workflow-aggregator
+    - workflow-job
+    - git
+    - dark-theme
+    - pipeline-stage-view
+    - ws-cleanup
+    - sonar
+    - github-branch-source
+    - job-dsl
+
+  JCasC:
+    enabled: true
+    defaultConfig: false
+    config: {}
+    configMaps:
+      - jenkins-jcasc-main
+      - jenkins-jcasc-credentials
+      - jenkins-jcasc-global-library
+      - jenkins-jcasc-seed-job
+  authorizationStrategy: {}
+  securityRealm: {}
+
+persistence:
+  enabled: true
+  storageClass: default
+  size: "8Gi"
