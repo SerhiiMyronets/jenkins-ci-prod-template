@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    some-label: java
+spec:
+  serviceAccountName: default
+  initContainers:
+    - name: busybox-share-init
+      image: busybox:musl
+      command:
+        - sh
+      args:
+        - -c
+        - "cp -a /bin/* /busybox"
+      volumeMounts:
+        - name: busybox
+          mountPath: /busybox
+  containers:
+    - name: jnlp
+      image: jenkins/inbound-agent:3327.v868139a_d00e0-2
+      args: ["$(JENKINS_SECRET)", "$(JENKINS_NAME)"]
+      env:
+        - name: JENKINS_URL
+          value: http://jenkins.jenkins.svc.cluster.local:8080/
+      workingDir: /home/jenkins/agent
+
+    - name: java
+      image: eclipse-temurin:21.0.5_11-jdk
+      command: ["cat"]
+      tty: true
+      workingDir: /home/jenkins/agent
+
+    - name: gitleaks
+      image: zricethezav/gitleaks:latest
+      command: ["cat"]
+      tty: true
+      workingDir: /home/jenkins/agent
+
+    - name: sonar
+      image: sonarsource/sonar-scanner-cli:latest
+      command: ["cat"]
+      tty: true
+      workingDir: /home/jenkins/agent
+
+    - name: trivy
+      image: aquasec/trivy:latest
+      command: ["sleep"]
+      args: ["infinity"]
+      tty: true
+      workingDir: /home/jenkins/agent
+
+    - name: buildkit
+      image: moby/buildkit:buildx-stable-1
+      command: [ "sleep" ]
+      args: [ "infinity" ]
+      workingDir: /home/jenkins/agent
+      env:
+        - name: BUILDKIT_HOST
+          value: tcp://buildkit.buildkit.svc.cluster.local:1234
+      volumeMounts:
+        - name: docker-config
+          mountPath: /root/.docker
+        - name: busybox
+          mountPath: /busybox
+
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: dockerhub-token
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+    - name: busybox
+      emptyDir: {}
