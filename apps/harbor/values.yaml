@@ -1,0 +1,27 @@
+expose:
+  type: clusterIP
+  tls:
+    enabled: false
+
+externalURL: http://harbor-harbor-core.harbor.svc.cluster.local
+
+harborAdminPassword: "Harbor12345"
+
+persistence:
+  persistentVolumeClaim:
+    registry:
+      size: 5Gi
+    database:
+      size: 1Gi
+    redis:
+      size: 1Gi
+
+
+chartmuseum:
+  enabled: false
+
+notary:
+  enabled: false
+
+trivy:
+  enabled: false
