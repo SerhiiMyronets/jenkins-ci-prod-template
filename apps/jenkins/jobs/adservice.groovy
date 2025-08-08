@@ -1,9 +1,9 @@
-multibranchPipelineJob('paymentservice') {
+multibranchPipelineJob('adservice') {
   branchSources {
     github {
-      id('paymentservice-github')
-      repoOwner('DevSecOps-homelab')
-      repository('paymentservice')
+      id('adservice-github')
+      repoOwner('organization_name')
+      repository('adservice')
       scanCredentialsId('github-access-token')
     }
   }

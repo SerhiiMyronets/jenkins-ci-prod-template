@@ -2,7 +2,7 @@ multibranchPipelineJob('currencyservice') {
   branchSources {
     github {
       id('currencyservice-github')
-      repoOwner('DevSecOps-homelab')
+      repoOwner('organization_name')
       repository('currencyservice')
       scanCredentialsId('github-access-token')
     }
