@@ -1,4 +1,4 @@
-# Jenkins CI/CD Production Template
+# Jenkins CI Production Template
 
 ## 📖 About This Project
 
